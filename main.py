@@ -7,14 +7,7 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
-import cmf
-import cgw
-import tbv
-import ti
-import ssbp
-import ta
-import ts
-import ssip
+import subroutine as sub
 
 NX  = 20       #为x方向格点数
 NY  = 16       #为y方向格点数
@@ -55,10 +48,10 @@ for i in range(NX):
     fileRead1.seek(0)
 
 #=============================计算放大系数和地转参数================================
-rm,f = cmf.cmf(rm,f,d,cla,NX,NY)
+rm,f = sub.cmf(rm,f,d,cla,NX,NY)
 
 #================================计算地转风初值===================================
-ua,va = cgw.cgw(ua,va,za,rm,f,d,NX,NY)
+ua,va = sub.cgw(ua,va,za,rm,f,d,NX,NY)
 for i in range(NX):
     for j in range(NY):
         ur[i,j] = ua[i,j]
@@ -77,33 +70,33 @@ for i in range(NX):
 '''
 
 #==================================边值传送======================================
-ub,vb,zb = tbv.tbv(ub,vb,zb,ua,va,za,NX,NY)
-uc,vc,zc = tbv.tbv(uc,vc,zc,ua,va,za,NX,NY)
+ub,vb,zb = sub.tbv(ub,vb,zb,ua,va,za,NX,NY)
+uc,vc,zc = sub.tbv(uc,vc,zc,ua,va,za,NX,NY)
 
 #==================================开始预报======================================
 for na in [1,2]:
     nb = 0
     #欧拉后差积分1小时
     for nn in range(6):
-        ub,vb,zb = ti.ti(ua,va,za,ua,va,za,ub,vb,zb,rm,f,d,dt,zo,NX,NY)
-        ua,va,za = ti.ti(ua,va,za,ub,vb,zb,ua,va,za,rm,f,d,dt,zo,NX,NY)
+        ub,vb,zb = sub.ti(ua,va,za,ua,va,za,ub,vb,zb,rm,f,d,dt,zo,NX,NY)
+        ua,va,za = sub.ti(ua,va,za,ub,vb,zb,ua,va,za,rm,f,d,dt,zo,NX,NY)
         nb = nb+1
         continue
 
     #边界平滑子程序
-    za = ssbp.ssbp(za,w,s,NX,NY)
-    ua = ssbp.ssbp(ua,w,s,NX,NY)
-    va = ssbp.ssbp(va,w,s,NX,NY)
+    za = sub.ssbp(za,w,s,NX,NY)
+    ua = sub.ssbp(ua,w,s,NX,NY)
+    va = sub.ssbp(va,w,s,NX,NY)
 
     #前差积分半步
-    ub,vb,zb = ti.ti(ua,va,za,ua,va,za,ub,vb,zb,rm,f,d,c1,zo,NX,NY)
+    ub,vb,zb = sub.ti(ua,va,za,ua,va,za,ub,vb,zb,rm,f,d,c1,zo,NX,NY)
     #中央差积分半步
-    uc,vc,zc = ti.ti(ua,va,za,ub,vb,zb,uc,vc,zc,rm,f,d,dt,zo,NX,NY)
+    uc,vc,zc = sub.ti(ua,va,za,ub,vb,zb,uc,vc,zc,rm,f,d,dt,zo,NX,NY)
     #数组传送子程序
-    ub,vb,zb = ta.ta(ub,vb,zb,uc,vc,zc,NX,NY)
+    ub,vb,zb = sub.ta(ub,vb,zb,uc,vc,zc,NX,NY)
     #中央差积分一步,共积分11小时
     for nn in range(66):
-        uc,vc,zc = ti.ti(ua,va,za,ub,vb,zb,uc,vc,zc,rm,f,d,c2,zo,NX,NY)
+        uc,vc,zc = sub.ti(ua,va,za,ub,vb,zb,uc,vc,zc,rm,f,d,c2,zo,NX,NY)
         nb = nb+1
         #打印积分步数,na大循环步,nb小循环步
         print na,nb
@@ -112,28 +105,28 @@ for na in [1,2]:
             break
         #判断是否做边界平滑
         if nb/nt4*nt4==nb:
-            zc = ssbp.ssbp(zc,w,s,NX,NY)
-            uc = ssbp.ssbp(uc,w,s,NX,NY)
-            vc = ssbp.ssbp(vc,w,s,NX,NY)
+            zc = sub.ssbp(zc,w,s,NX,NY)
+            uc = sub.ssbp(uc,w,s,NX,NY)
+            vc = sub.ssbp(vc,w,s,NX,NY)
         #判断是否做时间平滑
         if nb==nt5:
-            ub,vb,zb = ts.ts(ua,ub,uc,va,vb,vc,za,zb,zc,s,NX,NY)
+            ub,vb,zb = sub.ts(ua,ub,uc,va,vb,vc,za,zb,zc,s,NX,NY)
         if nb==nt5+1:
-            ub,vb,zb = ts.ts(ua,ub,uc,va,vb,vc,za,zb,zc,s,NX,NY)
+            ub,vb,zb = sub.ts(ua,ub,uc,va,vb,vc,za,zb,zc,s,NX,NY)
         #数组传送,为下一轮积分做准备
-        ua,va,za = ta.ta(ua,va,za,ub,vb,zb,NX,NY)
-        ub,vb,zb = ta.ta(ub,vb,zb,uc,vc,zc,NX,NY)
+        ua,va,za = sub.ta(ua,va,za,ub,vb,zb,NX,NY)
+        ub,vb,zb = sub.ta(ub,vb,zb,uc,vc,zc,NX,NY)
 
         continue
 
     #区域内点平滑
-    zc = ssip.ssip(zc,w,s,NX,NY,2)
-    uc = ssip.ssip(uc,w,s,NX,NY,2)
-    vc = ssip.ssip(vc,w,s,NX,NY,2)
+    zc = sub.ssip(zc,w,s,NX,NY,2)
+    uc = sub.ssip(uc,w,s,NX,NY,2)
+    vc = sub.ssip(vc,w,s,NX,NY,2)
     #打印积分步数
     print na,nb
     #数组传送,为后12小时的积分做准备
-    ua,va,za = ta.ta(ua,va,za,uc,vc,zc,NX,NY)
+    ua,va,za = sub.ta(ua,va,za,uc,vc,zc,NX,NY)
 
 #===================================作 图=======================================
 plt.figure(figsize = [18,10])
