@@ -129,15 +129,14 @@ for na in [1,2]:
     ua,va,za = sub.ta(ua,va,za,uc,vc,zc,NX,NY)
 
 #===================================作 图=======================================
-plt.figure(figsize = [18,10])
+plt.figure(figsize = [16,9])
 scale = '50m'
 lim=[85,151.5,32.5,70]
 xstep = 5
 ystep = 5
 ax = plt.axes(projection=ccrs.PlateCarree())
-ax.set_extent(lim,crs=ccrs.PlateCarree())
-land = cfeature.NaturalEarthFeature('physical', 'land', scale,edgecolor='face',facecolor=cfeature.COLORS['land'])
-ax.add_feature(land, facecolor='0.75')
+#land = cfeature.NaturalEarthFeature('physical', 'land', scale,edgecolor='face',facecolor=cfeature.COLORS['land'])
+#ax.add_feature(land, facecolor='0.75')
 ax.coastlines(scale)
 lon_formatter = LongitudeFormatter(zero_direction_label=False)
 lat_formatter = LatitudeFormatter()
@@ -151,7 +150,8 @@ lev = np.arange(5200,5800+dd,dd)
 x = np.arange(85,155,3.5)
 y = np.arange(32.5,72.5,2.5)
 lons, lats = np.meshgrid(x, y)
-pic = ax.contour(x, y, zc.T,levels = lev,cmap='rainbow',linewidths = 3)
-plt.colorbar(pic,shrink = 0.8)
+pic = ax.contourf(x, y, zc.T,cmap='rainbow',linewidths = 3)
+plt.colorbar(pic,shrink = 0.7)
+wind=ax.quiver(x,y,uc.T,vc.T,width=0.002,headwidth=2,headlength=4)
 #plt.savefig('/Users/leonidas/Desktop/After_NWP.pdf')
 plt.show()
