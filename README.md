@@ -1,7 +1,11 @@
 # NWF-PBE-model
 Primitive barotropic equation model of numerical weather forecast based on Python
 
-Update: I have put the subroutines together in file "subroutine", now you only have to download "subroutine" and latest "main"
+Update: I've added wind quiver in main.
+
+=======================================================
+
+Update: I have put the subroutines together in file "subroutine", now you only have to download "subroutine" and latest "main".
 
 =======================================================
 
