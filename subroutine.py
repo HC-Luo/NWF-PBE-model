@@ -1,6 +1,7 @@
 #coding=utf-8
 import numpy as np
 import math
+
 #===============computing map factors and coriolis parameter====================
 '''
 rk为圆锥常数,rlq为兰勃特投影映像平面上赤道到北极点的距离,a为地球半径
@@ -96,36 +97,24 @@ def ssip(a,w,s,NX,NY,l):
     n = NY
     m2 = m-2
     n2 = n-2
-    if l==1:
-        for i in np.arange(2,m2):
-            for j in np.arange(2,n2):
-                w[i,j] = a[i,j]+s/4.0*(a[i-1,j]+a[i+1,j]+a[i,j-1]+a[i,j+1]-4.0*a[i,j])
+    for i in np.arange(1,m2):
+        for j in np.arange(1,n2):
+            w[i,j] = a[i,j]+s/4.0*(a[i-1,j]+a[i+1,j]+a[i,j-1]+a[i,j+1]-4.0*a[i,j])
 
-        for i in np.arange(2,m2):
-            for j in np.arange(2,n2):
-                a[i,j] = w[i,j]
-    elif l==2:
-        for i in np.arange(2,m2):
-            for j in np.arange(2,n2):
-                w[i,j] = a[i,j]+s/4.0*(a[i-1,j]+a[i+1,j]+a[i,j-1]+a[i,j+1]-4.0*a[i,j])
+    for i in np.arange(1,m2):
+        for j in np.arange(1,n2):
+            a[i,j] = w[i,j]
 
-        for i in np.arange(2,m2):
-            for j in np.arange(2,n2):
-                a[i,j] = w[i,j]
-
+    if l==2:
         s = -0.5
-
-        for i in np.arange(2,m2):
-            for j in np.arange(2,n2):
+        for i in np.arange(1,m2):
+            for j in np.arange(1,n2):
                 w[i,j] = a[i,j]+s/4.0*(a[i-1,j]+a[i+1,j]+a[i,j-1]+a[i,j+1]-4.0*a[i,j])
 
-        for i in np.arange(2,m2):
-            for j in np.arange(2,n2):
+        for i in np.arange(1,m2):
+            for j in np.arange(1,n2):
                 a[i,j] = w[i,j]
-
-    else:
-        print 'Space smoothing ERROR!'
-
+                
     return a
 
 #===========================transmiting arrays  数组传送=========================

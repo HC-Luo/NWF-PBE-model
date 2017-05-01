@@ -5,12 +5,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
-import cartopy.feature as cfeature
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
+import cartopy.feature as cfeature
 import subroutine as sub
 
-NX  = 20       #为x方向格点数
-NY  = 16       #为y方向格点数
+NX  = 20       #x方向格点数
+NY  = 16       #y方向格点数
 d   = 300000.0 #网格距
 cla = 51.0     #区域中心纬度
 clo = 118.0    #区域中心经度
@@ -135,8 +135,8 @@ lim=[85,151.5,32.5,70]
 xstep = 5
 ystep = 5
 ax = plt.axes(projection=ccrs.PlateCarree())
-#land = cfeature.NaturalEarthFeature('physical', 'land', scale,edgecolor='face',facecolor=cfeature.COLORS['land'])
-#ax.add_feature(land, facecolor='0.75')
+land = cfeature.NaturalEarthFeature('physical', 'land', scale,edgecolor='face',facecolor=cfeature.COLORS['land'])
+ax.add_feature(land, facecolor='0.75',alpha = 0.5)
 ax.coastlines(scale)
 lon_formatter = LongitudeFormatter(zero_direction_label=False)
 lat_formatter = LatitudeFormatter()
@@ -150,8 +150,8 @@ lev = np.arange(5200,5800+dd,dd)
 x = np.arange(85,155,3.5)
 y = np.arange(32.5,72.5,2.5)
 lons, lats = np.meshgrid(x, y)
-pic = ax.contourf(x, y, zc.T,cmap='rainbow',linewidths = 3)
+pic = ax.contour(x, y, zc.T,linewidths = 3,levels = np.arange(5100,5900+50,50),cmap='rainbow')
 plt.colorbar(pic,shrink = 0.7)
 wind=ax.quiver(x,y,uc.T,vc.T,width=0.002,headwidth=2,headlength=4)
-#plt.savefig('/Users/leonidas/Desktop/After_NWP.pdf')
-plt.show()
+plt.savefig('/Users/leonidas/Desktop/After2_NWP.pdf')
+#plt.show()
