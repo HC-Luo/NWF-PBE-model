@@ -1,6 +1,12 @@
 # NWF-PBE-model
 Primitive barotropic equation model of numerical weather forecast based on Python
 
+
+Update: changed wind quiver to wind flag
+--5.2
+
+=======================================================
+
 Update: corrected some errors in sub.ssip and found a better way to draw the map
 --5.1
 
